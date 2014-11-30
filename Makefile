@@ -32,7 +32,7 @@ SYSTEM=$(SYSTEM_TYPE)$(MACHINE_TYPE)
 
 LINKER_FLAGS=-Llib/$(SYSTEM) $(LIBS)
 
-SOURCES=$(shell find $(SOURCE_DIRECTORY) -maxdepth 3 -type f -name "*.c" -or -name "*.cpp" -or -name "*.cu")
+SOURCES=$(shell find $(SOURCE_DIRECTORY) -maxdepth 10 -type f -name "*.c" -or -name "*.cpp" -or -name "*.cu")
 
 OUTPUT=bin/$(SYSTEM)/$(NAME)
 OBJECT_DIRECTORY=make/$(SYSTEM)
@@ -43,8 +43,6 @@ OBJECTS_NV=$(filter %.cu,$(SOURCES))
 
 OBJECTS=$(SOURCES:%=$(OBJECT_DIRECTORY)/%.o)
 DEPENDENCIES=$(SOURCES:%=$(OBJECT_DIRECTORY)/%.d)
-
--include $(DEPENDENCIES)
 
 .PHONY: all prsys re rmourput clear
 
@@ -86,3 +84,5 @@ $(OBJECT_DIRECTORY)/%.cu.o: %.cu
 	mkdir -p $(shell dirname $@)
 	$(COMPILER_NV) $(COMPILER_NV_FLAGS) $< -o $@
 	$(COMPILER_NV) $(COMPILER_NV_FLAGS) -M -MM -MT $(OBJECT_DIRECTORY)/$<.o $< > $(OBJECT_DIRECTORY)/$<.d
+
+-include $(DEPENDENCIES)
