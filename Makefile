@@ -32,7 +32,7 @@ SYSTEM=$(SYSTEM_TYPE)$(MACHINE_TYPE)
 
 LINKER_FLAGS=-Llib/$(SYSTEM) $(LIBS)
 
-SOURCES=$(shell find $(SOURCE_DIRECTORY) -maxdepth 3 -type f -name "*.c" -or -name "*.cpp" -or -name "*.cu")
+SOURCES=$(shell find $(SOURCE_DIRECTORY) -maxdepth 10 -type f -name "*.c" -or -name "*.cpp" -or -name "*.cu")
 
 OUTPUT=bin/$(SYSTEM)/$(NAME)
 OBJECT_DIRECTORY=make/$(SYSTEM)
@@ -41,10 +41,10 @@ OBJECTS_CC=$(filter %.c,$(SOURCES))
 OBJECTS_CPP=$(filter %.cpp,$(SOURCES))
 OBJECTS_NV=$(filter %.cu,$(SOURCES))
 
-OBJECTS=$(OBJECTS_CC:%.c=%.c.o)
-OBJECTS+=$(OBJECTS_CPP:%.cpp=%.cpp.o)
-OBJECTS+=$(OBJECTS_NV:%.cu=%.cu.o)
-OBJECTS2=$(OBJECTS:%=$(OBJECT_DIRECTORY)/%)
+OBJECTS=$(SOURCES:%=$(OBJECT_DIRECTORY)/%.o)
+DEPENDENCIES=$(SOURCES:%=$(OBJECT_DIRECTORY)/%.d)
+
+.PHONY: all prsys re rmourput clear
 
 all: prsys $(OUTPUT)
 	mkdir -p $(OBJECT_DIRECTORY)
@@ -60,30 +60,29 @@ rmoutput:
 clear:
 	rm -f $(OUTPUT)
 	find make -name "*.o" -delete
+	find make -name "*.d" -delete
 
-$(OUTPUT): $(OBJECTS2)
-
+$(OUTPUT): $(OBJECTS)
 	echo "$@..."
 	mkdir -p $(shell dirname $@)
-	$(LINKER) $(OBJECTS2) $(LINKER_FLAGS) -o $@
+	$(LINKER) $(OBJECTS) $(LINKER_FLAGS) -o $@
 
 $(OBJECT_DIRECTORY)/%.c.o: %.c
 	echo "$<..."
 	mkdir -p $(shell dirname $@)
-	$(COMPILER_CC) $(COMPILER_CC_FLAGS) -M -MM -MT $@ $< > make/tmp.mk
-	echo "	$(COMPILER_CC) $(COMPILER_CC_FLAGS) $< -o $@" >> make/tmp.mk
-	make -f make/tmp.mk
+	$(COMPILER_CC) $(COMPILER_CC_FLAGS) $< -o $@
+	$(COMPILER_CC) $(COMPILER_CC_FLAGS) -M -MM -MT $(OBJECT_DIRECTORY)/$<.o $< > $(OBJECT_DIRECTORY)/$<.d
 
 $(OBJECT_DIRECTORY)/%.cpp.o: %.cpp
 	echo "$<..."
 	mkdir -p $(shell dirname $@)
-	$(COMPILER_CPP) $(COMPILER_CPP_FLAGS) -M -MM -MT $@ $< > make/tmp.mk
-	echo "	$(COMPILER_CPP) $(COMPILER_CPP_FLAGS) $< -o $@" >> make/tmp.mk
-	make -f make/tmp.mk
+	$(COMPILER_CPP) $(COMPILER_CPP_FLAGS) $< -o $@
+	$(COMPILER_CPP) $(COMPILER_CPP_FLAGS) -M -MM -MT $(OBJECT_DIRECTORY)/$<.o $< > $(OBJECT_DIRECTORY)/$<.d
 
 $(OBJECT_DIRECTORY)/%.cu.o: %.cu
 	echo "$<..."
 	mkdir -p $(shell dirname $@)
-	$(COMPILER_NV) $(COMPILER_NV_FLAGS) -M -MM -MT $@ $< > make/tmp.mk
-	echo "	$(COMPILER_NV) $(COMPILER_NV_FLAGS) $< -o $@" >> make/tmp.mk
-	make -f make/tmp.mk
+	$(COMPILER_NV) $(COMPILER_NV_FLAGS) $< -o $@
+	$(COMPILER_NV) $(COMPILER_NV_FLAGS) -M -MM -MT $(OBJECT_DIRECTORY)/$<.o $< > $(OBJECT_DIRECTORY)/$<.d
+
+-include $(DEPENDENCIES)
