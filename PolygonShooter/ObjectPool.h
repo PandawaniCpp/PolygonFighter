@@ -1,4 +1,4 @@
-/** @author adam
+/** @author Adam Olękiewicz
  * 
  * Top-down survival post-apocalyptic shooter
  * 
@@ -11,30 +11,23 @@
 
 #include <vector>
 #include "Game.h"
+#include <SFML/Graphics.hpp>
 
-class GameObject;
-
-class ObjectPool {
+class ProgramObject {
 public:
-	ObjectPool();
-	~ObjectPool();
+	ProgramObject();
+	virtual ~ProgramObject();
 
-	std::vector<GameObject*> gameObject;
-};
+	virtual void handleInput(sf::Event &eventHandler) =0;
+	virtual void update() =0;
+	virtual void render() =0;
 
-class GameObject: public Game {
-public:
-	GameObject();
-	~GameObject();
-	
-	//void handleInput();
-	//void update();
-	//void render();
-	
 	unsigned int getObjectId();
 private:
 	unsigned int mObjectId;
 };
+
+extern std::vector<ProgramObject*> sGlogalObject;
 
 #endif	/* OBJECTPOOL_H */
 

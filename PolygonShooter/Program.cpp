@@ -1,4 +1,4 @@
-/** @author adam
+/** @author Adam Olękiewicz
  * 
  * Top-down survival post-apocalyptic shooter
  */
@@ -7,6 +7,7 @@
 #include "GameWindow.h"
 #include "ObjectPool.h"
 #include "Graphics.h"
+#include "ErrorHandler.h"
 
 Program::Program() {
 }
@@ -22,9 +23,9 @@ void Program::run() {
 	sf::Clock gameClock;
 	sf::Time frameTime;
 	sf::Event eventHandler;
-	ObjectPool BgLayer;
 	sf::Uint32 winStyle;
-	
+	ErrorHandler errorHandler;
+
 	winStyle = settings.getFullscreenSet() == true ? sf::Style::Fullscreen : sf::Style::Default;
 	gameWin.create(settings.getVideoMode(), cGameTitle, winStyle);
 	
@@ -36,6 +37,12 @@ void Program::run() {
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 				gameWin.close();
 			}
+		}
+		
+		for(unsigned int i = 0; i < sGlogalObject.size(); i++) {
+			sGlogalObject.at(i)->handleInput(eventHandler);
+			sGlogalObject.at(i)->update();
+			sGlogalObject.at(i)->render();
 		}
 		
 		if(gameClock.getElapsedTime() >= sf::seconds(1.0/settings.getTargetFramerate())) {

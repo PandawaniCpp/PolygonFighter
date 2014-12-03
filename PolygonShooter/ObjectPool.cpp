@@ -5,16 +5,29 @@
 
 #include "ObjectPool.h"
 
-ObjectPool::ObjectPool() {
+std::vector<ProgramObject*> sGlogalObject;
+
+ProgramObject::ProgramObject() {
+	this->mObjectId = sGlogalObject.size();
+	sGlogalObject.push_back(this);
 }
 
-ObjectPool::~ObjectPool() {
+ProgramObject::~ProgramObject() {
+
 }
 
-GameObject::GameObject() {
-	
+unsigned int ProgramObject::getObjectId() {
+	return this->mObjectId;
 }
 
-GameObject::~GameObject() {
-	
+void ProgramObject::handleInput(sf::Event &eventHandler) {
+
+}
+
+void ProgramObject::update() {
+
+}
+
+void ProgramObject::render() {
+
 }

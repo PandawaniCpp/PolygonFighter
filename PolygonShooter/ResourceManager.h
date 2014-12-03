@@ -1,10 +1,9 @@
-/** @author adam
+/** @author Adam Olękiewicz
  * 
  * Top-down survival post-apocalyptic shooter
  * 
  * Class ResourceManager: 
  * [todo] - cares about loading resources, such as textures, to memory
- * [todo] - organizes objects
  * [todo] - provides adequate access scope for objects
  */
 

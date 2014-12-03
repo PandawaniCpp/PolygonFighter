@@ -1,4 +1,4 @@
-/** @author adam
+/** @author Adam Olękiewicz
  * 
  * Top-down survival post-apocalyptic shooter
  */
@@ -9,5 +9,5 @@ GameWindow::GameWindow() {
 }
 
 GameWindow::~GameWindow() {
-}
 
+}
